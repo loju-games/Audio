@@ -1,0 +1,10 @@
+{
+    "name": "LojuAudio",
+    "references": [
+        "Loju"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}
