@@ -5,7 +5,7 @@
   "description": "Tools for managing audio, including libraries for audio lookup and a controller for pooling",
   "unity": "2018.3",
   "dependencies": {
-      "com.lojugames.common" : "https://github.com/loju-games/Common.git"
+      "com.lojugames.common" : "1.0.0"
   },
  "keywords": [
     "Loju",
