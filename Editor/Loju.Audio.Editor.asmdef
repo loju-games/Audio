@@ -1,0 +1,17 @@
+{
+    "name": "Loju.Audio.Editor",
+    "references": [
+        "Loju",
+        "Loju.Audio"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}
