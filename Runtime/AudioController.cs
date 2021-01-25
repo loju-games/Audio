@@ -15,6 +15,7 @@ namespace Loju.Audio
         [SerializeField] private int _audioSourceCacheSize = 4;
 
         private Queue<AudioSource> _sourcePool;
+        private List<AudioSource> _releaseQueue;
 
         protected override void Awake()
         {
@@ -23,6 +24,7 @@ namespace Loju.Audio
             if (_sourcePool != null) return;
 
             // setup audio source pool
+            _releaseQueue = new List<AudioSource>();
             _sourcePool = new Queue<AudioSource>();
             for (int i = 0; i < _audioSourceCacheSize; ++i)
             {
@@ -126,7 +128,7 @@ namespace Loju.Audio
 
             if (waitTillComplete && source.isPlaying && !source.loop)
             {
-                StartCoroutine(RoutineWaitToRelease(source));
+                _releaseQueue.Add(source);
             }
             else
             {
@@ -145,11 +147,18 @@ namespace Loju.Audio
             _sourcePool.Enqueue(source);
         }
 
-        private IEnumerator RoutineWaitToRelease(AudioSource source)
+        private void Update()
         {
-            while (source.isPlaying) yield return null;
-
-            InternalReleaseAudioSource(source);
+            int i = _releaseQueue.Count - 1;
+            for (; i >= 0; --i)
+            {
+                AudioSource source = _releaseQueue[i];
+                if (source == null || !source.isPlaying)
+                {
+                    if (source != null) InternalReleaseAudioSource(source);
+                    _releaseQueue.RemoveAt(i);
+                }
+            }
         }
 
         private AudioSource CreateAudioSource(string sourceName)
