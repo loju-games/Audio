@@ -1,13 +1,13 @@
 {
   "name": "com.lojugames.audio",
-  "version": "1.0.0",
+  "version": "1.2.1",
   "displayName": "Loju Audio",
   "description": "Tools for managing audio, including libraries for audio lookup and a controller for pooling",
   "unity": "2018.3",
   "dependencies": {
-      "com.lojugames.common" : "1.0.0"
+    "com.lojugames.common": "1.0.0"
   },
- "keywords": [
+  "keywords": [
     "Loju",
     "Audio"
   ],
@@ -15,5 +15,5 @@
     "name": "Loju",
     "email": "hello@loju.co.uk",
     "url": "https://loju.co.uk"
-  } 
+  }
 }

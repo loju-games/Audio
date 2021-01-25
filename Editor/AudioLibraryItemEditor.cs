@@ -13,12 +13,16 @@ namespace Loju.Audio.Editor
             if (!property.isExpanded) return EditorGUIUtility.singleLineHeight;
 
             SerializedProperty key = property.FindPropertyRelative("key");
+            SerializedProperty mixer = property.FindPropertyRelative("mixerGroup");
+            SerializedProperty delay = property.FindPropertyRelative("delay");
             SerializedProperty clips = property.FindPropertyRelative("clips");
             SerializedProperty mode = property.FindPropertyRelative("selectAtRandom");
             SerializedProperty volume = property.FindPropertyRelative("volumeScale");
 
             float height = EditorGUI.GetPropertyHeight(key) + EditorGUIUtility.singleLineHeight;
+            height += EditorGUI.GetPropertyHeight(mixer);
             height += EditorGUI.GetPropertyHeight(volume);
+            height += EditorGUI.GetPropertyHeight(delay);
             height += EditorGUI.GetPropertyHeight(clips);
             if (clips.arraySize > 1) height += EditorGUI.GetPropertyHeight(mode);
 
@@ -34,6 +38,8 @@ namespace Loju.Audio.Editor
 
             if (property.isExpanded)
             {
+                SerializedProperty mixer = property.FindPropertyRelative("mixerGroup");
+                SerializedProperty delay = property.FindPropertyRelative("delay");
                 SerializedProperty clips = property.FindPropertyRelative("clips");
                 SerializedProperty mode = property.FindPropertyRelative("selectAtRandom");
                 SerializedProperty volume = property.FindPropertyRelative("volumeScale");
@@ -45,11 +51,15 @@ namespace Loju.Audio.Editor
 
                 Rect keyRect = new Rect(position.x, foldRect.y + foldRect.height, position.width, EditorGUI.GetPropertyHeight(key));
                 Rect volumeRect = new Rect(position.x, keyRect.y + keyRect.height, position.width, EditorGUI.GetPropertyHeight(volume));
-                Rect clipsRect = new Rect(position.x, volumeRect.y + volumeRect.height, position.width, EditorGUI.GetPropertyHeight(clips));
+                Rect mixerRect = new Rect(position.x, volumeRect.y + volumeRect.height, position.width, EditorGUI.GetPropertyHeight(mixer));
+                Rect delayRect = new Rect(position.x, mixerRect.y + mixerRect.height, position.width, EditorGUI.GetPropertyHeight(delay));
+                Rect clipsRect = new Rect(position.x, delayRect.y + delayRect.height, position.width, EditorGUI.GetPropertyHeight(clips));
                 Rect modeRect = new Rect(position.x, clipsRect.y + clipsRect.height, position.width, EditorGUI.GetPropertyHeight(mode));
 
                 EditorGUI.PropertyField(keyRect, key);
                 EditorGUI.PropertyField(volumeRect, volume);
+                EditorGUI.PropertyField(mixerRect, mixer);
+                EditorGUI.PropertyField(delayRect, delay);
                 EditorGUI.PropertyField(clipsRect, clips, true);
                 if (clips.arraySize > 1) EditorGUI.PropertyField(modeRect, mode);
 

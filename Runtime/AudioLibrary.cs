@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 using System.Collections.Generic;
 
 namespace Loju.Audio
@@ -40,19 +41,42 @@ namespace Loju.Audio
             if (_lookup.ContainsKey(key))
             {
                 AudioLibraryItem item = _lookup[key];
+                if (item.mixerGroup != null) source.outputAudioMixerGroup = item.mixerGroup;
                 source.clip = item.GetClip();
                 source.volume = item.volumeScale;
             }
         }
 
+        public float GetDelayForKey(string key)
+        {
+            AudioLibraryItem item;
+            if (_lookup.TryGetValue(key, out item)) return item.delay;
+            else if (HasParent) return parent.GetDelayForKey(key);
+            else return 0;
+        }
+
+        public AudioMixerGroup GetMixerGroupForKey(string key)
+        {
+            AudioLibraryItem item;
+            if (_lookup.TryGetValue(key, out item)) return item.mixerGroup;
+            else if (HasParent) return parent.GetMixerGroupForKey(key);
+            else return null;
+        }
+
         public AudioClip GetClipForKey(string key)
         {
-            return _lookup.ContainsKey(key) ? _lookup[key].GetClip() : HasParent ? parent.GetClipForKey(key) : null;
+            AudioLibraryItem item;
+            if (_lookup.TryGetValue(key, out item)) return item.GetClip();
+            else if (HasParent) return parent.GetClipForKey(key);
+            else return null;
         }
 
         public float GetVolumeForKey(string key)
         {
-            return _lookup.ContainsKey(key) ? _lookup[key].volumeScale : HasParent ? parent.GetVolumeForKey(key) : 1f;
+            AudioLibraryItem item;
+            if (_lookup.TryGetValue(key, out item)) return item.volumeScale;
+            else if (HasParent) return parent.GetVolumeForKey(key);
+            else return 1f;
         }
 
         public string[] GetKeys(bool includeInherited = false)
@@ -117,6 +141,24 @@ namespace Loju.Audio
         {
 
         }
+
+        public static AudioLibrary Create(AudioLibraryItem[] items, bool isMaster, AudioLibrary parent)
+        {
+            AudioLibrary library = ScriptableObject.CreateInstance<AudioLibrary>();
+            library._isMaster = isMaster;
+            library._parent = parent;
+            library._items = items;
+            library._lookup = new Dictionary<string, AudioLibraryItem>();
+
+            int i = 0, l = items.Length;
+            for (; i < l; ++i)
+            {
+                library._lookup.Add(items[i].key, items[i]);
+            }
+
+            return library;
+        }
+
     }
 
     [System.Serializable]
@@ -124,11 +166,26 @@ namespace Loju.Audio
     {
 
         public string key;
+        public AudioMixerGroup mixerGroup;
+        public float delay = 0;
         public AudioClip[] clips;
         public bool selectAtRandom = true;
         [Range(0f, 1f)] public float volumeScale = 1f;
 
         private int _lastIndex = -1;
+
+        public AudioLibraryItem()
+        {
+            this.selectAtRandom = true;
+            this.volumeScale = 1f;
+            this.delay = 0;
+        }
+
+        public AudioLibraryItem(string key, AudioClip[] clips) : this()
+        {
+            this.key = key;
+            this.clips = clips;
+        }
 
         public AudioClip GetClip()
         {
