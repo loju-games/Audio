@@ -1,6 +1,6 @@
 {
   "name": "com.lojugames.audio",
-  "version": "1.2.2",
+  "version": "1.2.4",
   "displayName": "Loju Audio",
   "description": "Tools for managing audio, including libraries for audio lookup and a controller for pooling",
   "unity": "2018.3",

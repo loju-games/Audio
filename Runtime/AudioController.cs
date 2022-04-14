@@ -9,10 +9,13 @@ namespace Loju.Audio
     public sealed class AudioController : Singleton<AudioController>
     {
 
-        public AudioMixer audioMixer { get { return _audioMixer; } }
+        private const string kDefaultSourceName = "AudioSource";
+
+        public AudioMixer audioMixer { get { return _audioMixer; } set { _audioMixer = value; } }
 
         [SerializeField] private AudioMixer _audioMixer = null;
         [SerializeField] private int _audioSourceCacheSize = 4;
+        [SerializeField] private bool _debug = false;
 
         private Queue<AudioSource> _sourcePool;
         private List<AudioSource> _releaseQueue;
@@ -28,7 +31,7 @@ namespace Loju.Audio
             _sourcePool = new Queue<AudioSource>();
             for (int i = 0; i < _audioSourceCacheSize; ++i)
             {
-                _sourcePool.Enqueue(CreateAudioSource(string.Format("AudioSource ({0})", i)));
+                _sourcePool.Enqueue(CreateAudioSource());
             }
         }
 
@@ -108,15 +111,16 @@ namespace Loju.Audio
         {
             if (_sourcePool == null) Awake();
 
-            AudioSource source = _sourcePool.Count > 0 ? _sourcePool.Dequeue() : CreateAudioSource("AudioSource");
+            AudioSource source = _sourcePool.Count > 0 ? _sourcePool.Dequeue() : CreateAudioSource();
             source.outputAudioMixerGroup = group;
             source.volume = 1;
             source.pitch = 1;
             source.time = 0;
             source.playOnAwake = false;
             source.loop = false;
+
 #if UNITY_EDITOR
-            source.name = string.Concat(source.name, " (Allocated)");
+            if (_debug) source.name = $"{kDefaultSourceName} (Allocated)";
 #endif
 
             return source;
@@ -141,7 +145,7 @@ namespace Loju.Audio
             source.Stop();
             source.clip = null;
 #if UNITY_EDITOR
-            source.name = source.name.Replace(" (Allocated)", "");
+            if (_debug) source.name = kDefaultSourceName;
 #endif
 
             _sourcePool.Enqueue(source);
@@ -161,9 +165,9 @@ namespace Loju.Audio
             }
         }
 
-        private AudioSource CreateAudioSource(string sourceName)
+        private AudioSource CreateAudioSource()
         {
-            GameObject go = new GameObject(sourceName);
+            GameObject go = new GameObject(kDefaultSourceName);
             go.transform.SetParent(transform, false);
 
             AudioSource audioSource = go.AddComponent<AudioSource>();
